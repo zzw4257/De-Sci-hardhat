@@ -1,0 +1,1166 @@
+{
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_userRegistry",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_datasetManager",
+          "type": "address"
+        },
+        {
+          "internalType": "address payable",
+          "name": "_researchNFT",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_influenceRanking",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_zkpVerifier",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnableInvalidOwner",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "OwnableUnauthorizedAccount",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "ReentrancyGuardReentrantCall",
+      "type": "error"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "user1",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "user2",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "researchId",
+          "type": "uint256"
+        }
+      ],
+      "name": "CollaborationFormed",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "oldRank",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "newRank",
+          "type": "uint256"
+        }
+      ],
+      "name": "InfluenceRankingUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        }
+      ],
+      "name": "PlatformConfigUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "reason",
+          "type": "string"
+        }
+      ],
+      "name": "RewardDistributed",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_fromTokenId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_toTokenId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "_context",
+          "type": "string"
+        }
+      ],
+      "name": "addCitationWithReward",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "collabNetwork",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "totalCollaborations",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "config",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "userRegistrationReward",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "datasetUploadReward",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "researchPublishReward",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "peerReviewReward",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "citationReward",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "qualityBonusMultiplier",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "weeklyInfluenceReward",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "rewardsEnabled",
+          "type": "bool"
+        },
+        {
+          "internalType": "uint256",
+          "name": "minimumReputationToReview",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "minimumReviewsToPublish",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "reviewReward",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "datasetManager",
+      "outputs": [
+        {
+          "internalType": "contract DatasetManager",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "distributeWeeklyInfluenceRewards",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getAllResearches",
+      "outputs": [
+        {
+          "internalType": "uint256[]",
+          "name": "",
+          "type": "uint256[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_user",
+          "type": "address"
+        }
+      ],
+      "name": "getCollaborationRecommendations",
+      "outputs": [
+        {
+          "internalType": "address[]",
+          "name": "recommendedUsers",
+          "type": "address[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "compatibilityScores",
+          "type": "uint256[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_researchId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getPeerReviews",
+      "outputs": [
+        {
+          "internalType": "address[]",
+          "name": "reviewers",
+          "type": "address[]"
+        },
+        {
+          "internalType": "uint8[]",
+          "name": "ratings",
+          "type": "uint8[]"
+        },
+        {
+          "internalType": "string[]",
+          "name": "comments",
+          "type": "string[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getPlatformStats",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "totalUsers",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "totalDatasets",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "totalResearches",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "totalCitations",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "totalRewardsDistributed",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "averageInfluenceScore",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "activeUsersThisMonth",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct DeSciPlatform.PlatformStats",
+          "name": "stats",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_researchId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getResearch",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "title",
+          "type": "string"
+        },
+        {
+          "internalType": "address",
+          "name": "researcher",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "status",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "datasetId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "nftTokenId",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_tokenId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getResearchInfluencePath",
+      "outputs": [
+        {
+          "internalType": "uint256[]",
+          "name": "citingWorks",
+          "type": "uint256[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "citedWorks",
+          "type": "uint256[]"
+        },
+        {
+          "internalType": "uint256",
+          "name": "totalInfluenceScore",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_researcher",
+          "type": "address"
+        }
+      ],
+      "name": "getResearcherPublications",
+      "outputs": [
+        {
+          "internalType": "uint256[]",
+          "name": "",
+          "type": "uint256[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getTotalResearches",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_user",
+          "type": "address"
+        }
+      ],
+      "name": "getUserResearchTrajectory",
+      "outputs": [
+        {
+          "internalType": "uint256[]",
+          "name": "researchIds",
+          "type": "uint256[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "timestamps",
+          "type": "uint256[]"
+        },
+        {
+          "internalType": "string[]",
+          "name": "titles",
+          "type": "string[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "citationCounts",
+          "type": "uint256[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "influenceRanking",
+      "outputs": [
+        {
+          "internalType": "contract InfluenceRanking",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "lastRewardClaim",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_researchId",
+          "type": "uint256"
+        }
+      ],
+      "name": "manuallyPublishResearch",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes",
+          "name": "",
+          "type": "bytes"
+        }
+      ],
+      "name": "onERC721Received",
+      "outputs": [
+        {
+          "internalType": "bytes4",
+          "name": "",
+          "type": "bytes4"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "pauseRewards",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_title",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_abstract",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_datasetName",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_datasetDescription",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_dataHash",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_metadataHash",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "_zkProofIds",
+          "type": "uint256[]"
+        },
+        {
+          "internalType": "bool",
+          "name": "_isPublicDataset",
+          "type": "bool"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_datasetPrice",
+          "type": "uint256"
+        }
+      ],
+      "name": "publishResearch",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address[]",
+          "name": "_authors",
+          "type": "address[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "_authorShares",
+          "type": "uint256[]"
+        },
+        {
+          "internalType": "string",
+          "name": "_title",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_abstractText",
+          "type": "string"
+        },
+        {
+          "internalType": "string[]",
+          "name": "_keywords",
+          "type": "string[]"
+        },
+        {
+          "internalType": "string[]",
+          "name": "_researchFields",
+          "type": "string[]"
+        },
+        {
+          "internalType": "enum ResearchNFT.PublicationType",
+          "name": "_pubType",
+          "type": "uint8"
+        },
+        {
+          "internalType": "string",
+          "name": "_contentHash",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_metadataHash",
+          "type": "string"
+        },
+        {
+          "internalType": "bool",
+          "name": "_isOpenAccess",
+          "type": "bool"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_accessPrice",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "_tokenURI",
+          "type": "string"
+        }
+      ],
+      "name": "publishResearchWithReward",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_name",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_organization",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_email",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_researchFields",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_credentials",
+          "type": "string"
+        },
+        {
+          "internalType": "enum DeSciRegistry.UserRole",
+          "name": "_role",
+          "type": "uint8"
+        }
+      ],
+      "name": "registerUserWithReward",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "researchGraph",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "totalConnections",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "researchNFT",
+      "outputs": [
+        {
+          "internalType": "contract ResearchNFT",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "resumeRewards",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "sciToken",
+      "outputs": [
+        {
+          "internalType": "contract SciToken",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string[]",
+          "name": "_keywords",
+          "type": "string[]"
+        }
+      ],
+      "name": "searchResearchByKeywords",
+      "outputs": [
+        {
+          "internalType": "uint256[]",
+          "name": "researchIds",
+          "type": "uint256[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "relevanceScores",
+          "type": "uint256[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_researchId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint8",
+          "name": "_rating",
+          "type": "uint8"
+        },
+        {
+          "internalType": "string",
+          "name": "_reviewHash",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_comments",
+          "type": "string"
+        }
+      ],
+      "name": "submitPeerReview",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_tokenId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint8",
+          "name": "_score",
+          "type": "uint8"
+        },
+        {
+          "internalType": "string",
+          "name": "_reviewHash",
+          "type": "string"
+        },
+        {
+          "internalType": "bool",
+          "name": "_isAnonymous",
+          "type": "bool"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "_zkpProof",
+          "type": "bytes32"
+        }
+      ],
+      "name": "submitPeerReviewWithReward",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "totalRewardsEarned",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "userRegistrationReward",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "datasetUploadReward",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "researchPublishReward",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "peerReviewReward",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "citationReward",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "qualityBonusMultiplier",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "weeklyInfluenceReward",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "rewardsEnabled",
+              "type": "bool"
+            },
+            {
+              "internalType": "uint256",
+              "name": "minimumReputationToReview",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "minimumReviewsToPublish",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "reviewReward",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct DeSciPlatform.PlatformConfig",
+          "name": "_newConfig",
+          "type": "tuple"
+        }
+      ],
+      "name": "updatePlatformConfig",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_minReputationToReview",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_minReviewsToPublish",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_reviewReward",
+          "type": "uint256"
+        }
+      ],
+      "name": "updatePlatformSettings",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_title",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_description",
+          "type": "string"
+        },
+        {
+          "internalType": "string[]",
+          "name": "_keywords",
+          "type": "string[]"
+        },
+        {
+          "internalType": "enum DatasetManager.DatasetType",
+          "name": "_dataType",
+          "type": "uint8"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_size",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "_ipfsHash",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_metadataHash",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_zkpProofHash",
+          "type": "string"
+        },
+        {
+          "internalType": "enum DatasetManager.AccessType",
+          "name": "_accessType",
+          "type": "uint8"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_accessPrice",
+          "type": "uint256"
+        }
+      ],
+      "name": "uploadDatasetWithReward",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "userRegistry",
+      "outputs": [
+        {
+          "internalType": "contract DeSciRegistry",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "withdrawPlatformFees",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "zkpVerifier",
+      "outputs": [
+        {
+          "internalType": "contract ZKPVerifier",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "stateMutability": "payable",
+      "type": "receive"
+    }
+  ]
+}
