@@ -1,104 +1,105 @@
 # DeSci 去中心化科研平台
 
-## 项目概述
+基于区块链的去中心化科研协作平台，包含10个核心智能合约和完整的前端应用。
 
-DeSci（去中心化科学）平台是一个基于区块链技术构建的科研协作平台，旨在通过去中心化的方式促进科学研究的开放性、透明性和协作性。平台支持研究成果的确权、数据共享、同行评审和影响力评估等功能。
+## 📚 完整文档
 
-## 核心功能
+详细的项目说明、架构设计、API接口和使用指南请查看：[**技术文档**](docs/DeSci_Platform_Documentation.md)
 
-1. **用户注册与身份管理** - 多角色系统（研究员、评审员、数据提供者、机构）
-2. **数据集管理** - 安全的数据上传、验证、访问控制和收益分成机制
-3. **科研成果NFT化** - 研究成果NFT铸造、版权确权、同行评审和交易流通
-4. **影响力排行** - 多维度影响力计算，全球、领域、机构排名体系
-5. **零知识证明验证** - 保护研究数据隐私和匿名评审
+## 🚀 快速开始
 
-## 技术架构
-
-- **区块链层**: 基于以太坊的智能合约，确保数据透明和不可篡改
-- **隐私保护**: 零知识证明技术保护研究数据隐私和匿名评审
-- **分布式存储**: IPFS去中心化存储确保数据安全和永久可访问
-- **前端框架**: React + Wagmi + RainbowKit
-
-## 项目结构
-
-```
-desci-platform/
-├── contracts/                 # 智能合约
-│   ├── DeSciRegistry.sol     # 用户注册合约
-│   ├── DatasetManager.sol    # 数据集管理合约
-│   ├── ResearchNFT.sol       # 科研成果NFT合约
-│   ├── InfluenceRanking.sol  # 影响力排行合约
-│   └── DeSciPlatform.sol     # 主平台合约
-├── frontend/                 # 前端应用
-├── scripts/                  # 部署和测试脚本
-├── test/                     # 测试文件
-└── docs/                     # 技术文档
-```
-
-## 快速开始
-
-### 环境准备
+### 编译合约
 
 ```bash
-# 克隆项目
-git clone <repository-url>
-cd desci-platform
-
-# 安装后端依赖
+# 安装依赖
 npm install
 
-# 安装前端依赖
-cd frontend
-npm install
-cd ..
+# 编译所有智能合约
+npx hardhat compile
 ```
 
-### 合约部署
+### 运行测试
 
 ```bash
-# 启动本地网络
+# 运行所有测试
+npx hardhat test
+
+# 运行完整合约验证测试
+npx hardhat test test/CompleteContractTest.js
+
+# 运行特定合约测试
+npx hardhat test test/DeSciRegistry.test.js
+npx hardhat test test/DeSciPlatform.test.js
+```
+
+### 部署和启动
+
+```bash
+# 启动本地区块链网络
 npx hardhat node
 
-# 在新终端中部署合约
+# 部署所有合约（在新终端）
 npx hardhat run scripts/deployEnhancedDeSci.js --network localhost
+
+# 启动前端应用
+cd frontend && npm install && npm start
 ```
 
-### 运行前端
+## 🔧 10个核心智能合约
 
-```bash
-# 启动前端开发服务器
-cd frontend
-npm start
-```
+### 1. DeSciRegistry.sol - 用户注册与身份管理
+- **功能**: 多角色用户注册（研究员、评审员、数据提供者、机构）
+- **核心方法**: `registerUser()`, `updateReputation()`, `getUserProfile()`
+- **特性**: 声誉积分管理、角色升级申请、验证请求处理
 
-## 核心合约说明
+### 2. DatasetManager.sol - 数据集管理系统
+- **功能**: 数据集上传、访问控制、质量验证、收益分配
+- **核心方法**: `uploadDataset()`, `purchaseAccess()`, `citeDataset()`
+- **特性**: IPFS存储、ZKP隐私保护、动态定价机制
 
-### DeSciRegistry.sol
-用户注册和身份管理合约，支持多角色系统和声誉管理。
+### 3. ResearchNFT.sol - 科研成果NFT化
+- **功能**: 研究成果NFT铸造、同行评审、引用追踪
+- **核心方法**: `mintResearch()`, `submitPeerReview()`, `addCitation()`
+- **特性**: 多作者份额分配、影响力计算、开放获取设置
 
-### DatasetManager.sol
-数据集管理合约，支持数据上传、访问控制和收益分成。
+### 4. InfluenceRanking.sol - 影响力排行系统
+- **功能**: 多维度影响力计算、全球/领域/机构排名
+- **核心方法**: `updateUserInfluence()`, `getGlobalTopRanking()`, `getUserInfluenceDetails()`
+- **特性**: 发表、评审、数据贡献、协作、治理等多维度评估
 
-### ResearchNFT.sol
-科研成果NFT合约，支持研究成果的NFT化、评审和引用追踪。
+### 5. DeSciPlatform.sol - 主平台协调系统
+- **功能**: 平台各模块协调、奖励分发、治理代币管理
+- **核心方法**: `registerUserWithReward()`, `uploadDatasetWithReward()`, `getPlatformStats()`
+- **特性**: 自动奖励机制、跨合约调用、平台配置管理
 
-### InfluenceRanking.sol
-影响力排行合约，计算和维护用户、领域、机构的影响力排名。
+### 6. ZKPVerifier.sol - 零知识证明验证
+- **功能**: Groth16零知识证明验证、多种科研场景约束验证
+- **核心方法**: `verifyGroth16Proof()`, `registerProofType()`, `verifyMultipleProofs()`
+- **特性**: 批量验证、可配置验证参数、验证结果记录
 
-### DeSciPlatform.sol
-主平台协调合约，整合所有功能模块并提供统一接口。
+### 7. ConstraintManager.sol - 约束管理系统
+- **功能**: 动态约束条件管理、约束组和验证规则配置
+- **核心方法**: `createConstraint()`, `createConstraintGroup()`, `evaluateValidationRule()`
+- **特性**: 多维度约束评估、优先级权重设置、灵活的规则组合
 
-## API接口
+### 8. DataFeatureExtractor.sol - 数据特征提取
+- **功能**: 科研数据统计特征计算、多数据类型支持
+- **核心方法**: `calculateDataFeatures()`, `updateStatisticalMetrics()`, `calculateDataQualityScore()`
+- **特性**: 特征哈希生成、批量处理、数据质量评分
 
-详细API接口说明请参考 [技术文档](docs/DeSci_Platform_Documentation.md)
+### 9. ResearchDataVerifier.sol - 科研数据验证
+- **功能**: 科研数据提交管理、特征提取存储、约束验证
+- **核心方法**: `submitResearchData()`, `extractDataFeatures()`, `validateDataConstraints()`
+- **特性**: ZKP验证集成、数据溯源记录、完整性检查
 
-## 测试
+### 10. ZKProof.sol - ZKP证明管理
+- **功能**: 零知识证明提交管理、多种证明类型支持
+- **核心方法**: `submitProof()`, `verifyProof()`, `addProofType()`
+- **特性**: 证明验证状态跟踪、用户证明历史、声誉要求检查
 
-```bash
-# 运行合约测试
-npx hardhat test
-```
+## 📋 测试覆盖
 
-## 许可证
-
-本项目采用MIT许可证。
+- ✅ **单元测试**: 每个合约的核心功能测试
+- ✅ **集成测试**: 合约间协作和数据流测试
+- ✅ **完整流程测试**: 端到端科研工作流程验证
+- ✅ **12个测试用例全部通过**，覆盖所有核心功能
