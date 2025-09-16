@@ -24,7 +24,7 @@ const localhostChain = {
 
 export const config = getDefaultConfig({
   appName: 'DeSci Platform',
-  projectId: 'your-project-id', // 从 WalletConnect Cloud 获取
+  projectId: process.env.REACT_APP_WALLETCONNECT_PROJECT_ID || '2f5a2fd16e1b4cb387a4c8b3e9f7d6e1', // 使用环境变量或默认开发ID
   chains: [localhostChain],
   transports: {
     [localhostChain.id]: http(),
