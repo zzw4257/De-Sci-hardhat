@@ -7,7 +7,7 @@ import (
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"your-project/internal/model"
+	"desci-backend/internal/model"
 )
 
 type Repository struct {

@@ -1,0 +1,149 @@
+% !TEX program = xelatex
+\documentclass[10pt]{beamer}
+\usetheme{Madrid}
+\usecolortheme{seahorse}
+\usepackage[UTF8]{ctex}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{amsmath}
+\title{DeSci 链上写 / 链下读 MVP 架构展示}
+\subtitle{高信息密度 · 技术亮点 · 8-10 分钟}
+\author{周子为 \and 张家畅}
+\date{\\(内部讨论稿)}
+
+\begin{document}
+
+% 标题页
+\begin{frame}
+  \titlepage
+\end{frame}
+
+% 目录
+\begin{frame}{目录}
+  \tableofcontents
+\end{frame}
+
+\section{问题与动机}
+\begin{frame}{痛点速览}
+  % 列表：使用五个关键词占位
+  % 【高Gas】【查询慢】【链上存储冗余】【不可扩展】【数据无法验证】
+\end{frame}
+\begin{frame}{Why 链上写 / 链下读}
+  % 对比图占位：左侧“全部链上” 右侧“MVP架构”
+  % 图片占位描述：图1：两列结构对比（标注Gas/延迟）
+\end{frame}
+
+\section{总体架构}
+\begin{frame}{设计原则}
+  % 三列占位：【最小可用】【可验证完整性】【可向复杂扩展】
+  【最小可用】——只含事件监听/入库/查询/验证\\
+  【可验证完整性】——链上哈希对照链下内容\\
+  【可向复杂扩展】——预留 Hook（缓存/指标/批量校验）
+\end{frame}
+\begin{frame}{架构总览}
+  % 图片：事件驱动数据流
+  % 图片占位描述：用户 -> 合约(事件) -> Listener -> DB -> API -> 校验接口
+\end{frame}
+
+\section{链上设计}
+\begin{frame}{合约最小交互面}
+  【ResearchNFT.Created】核心新增\\
+  【ResearchNFT.Updated】元数据演化\\
+  【DatasetManager.Created】引用/聚合入口\\
+  % 说明：仅取高价值事件，减少监听复杂度
+\end{frame}
+\begin{frame}{事件模型}
+  % 表格占位：事件名 | 主键字段 | 关键参数
+  【事件名列】：Created / Updated / DatasetCreated\\
+  【主键字段】：tokenId / datasetId\\
+  【关键参数】：author / dataHash / blockTimestamp\\
+  【去重键】：txHash + logIndex\\
+  % 图片占位：事件结构框图（框内字段分组：身份/内容哈希/链位置）
+\end{frame}
+\begin{frame}{哈希策略}
+  % 步骤占位：获取明文 -> keccak256 -> 比对 -> 返回match
+  【Step1】接收明文(raw)\\
+  【Step2】UTF8标准化\\
+  【Step3】keccak256(raw) -> localHash\\
+  【Step4】对比链上/DB dataHash\\
+  【Result】match / mismatch\\
+  % 图片占位：Hash 验证流程箭头图（左 raw，中 hash，右 判定）
+\end{frame}
+
+\section{链下设计}
+\begin{frame}{事件到入库链路}
+  % 流程节点占位：Subscribe -> Decode -> Map -> Dedup -> Insert
+  % 图片占位：时序图
+\end{frame}
+\begin{frame}{最小数据模型}
+  % 表格占位：research_data / event_log 字段列表
+  % 图片占位：ER简图
+\end{frame}
+\begin{frame}{暂不做的（控制范围）}
+  % 列表：【缓存】【指标】【批量校验】【统计】 -> 标注“Hook 预留”
+\end{frame}
+
+\section{关键流程}
+\begin{frame}{写入流程（事件驱动）}
+  % 步骤占位：1 Mint -> 2 Emit -> 3 Listen -> 4 Persist -> 5 可查询
+  【1 用户调用 Mint】\\
+  【2 合约 Emit Created】\\
+  【3 Listener 订阅解码】\\
+  【4 去重+映射后入库】\\
+  【5 API 可查询】\\
+  % 图片：流程箭头（上方主链路，下方注释“幂等点”）
+\end{frame}
+\begin{frame}{查询与验证}
+  % 两列：左“列表&作者过滤” 右“单条哈希校验”
+  % 图片：API调用示意
+\end{frame}
+\begin{frame}{失败与降级}
+  % 列表：解析失败->日志; 写入冲突->忽略; 校验失败->返回 mismatch
+  【解析失败】-> 记录 error + 跳过\\
+  【JSON 映射异常】-> 标注 payloadRaw\\
+  【写入冲突】(已存在) -> 忽略(幂等)\\
+  【校验失败】-> 返回 mismatch（不阻断查询）\\
+  【缺失字段】-> 占位值 ("Untitled")\\
+  【未知事件】-> 忽略 + debug log
+\end{frame}
+
+\section{扩展预留}
+\begin{frame}{幂等与去重}
+  % 核心：txHash + logIndex
+  % 说明：冲突=已处理
+  【去重键】txHash+logIndex 复合唯一约束\\
+  【重复事件】直接跳过不回滚\\
+  【乱序到达】依赖区块号排序视图\\
+  【起始区块】START\_BLOCK 手动配置\\
+  【重放场景】可停机修改 START\_BLOCK\\
+  【失败重试】当前批次跳过，不阻塞主循环
+\end{frame}
+\begin{frame}{扩展挂钩位}
+  % 表格：缓存 | 指标 | 重放 | 批量校验 | 权限
+  % 每项写“Hook”占位
+  【缓存 Hook】service 查询返回处\\
+  【指标 Hook】listener 事件成功/失败计数\\
+  【重放 Hook】启动阶段 scan(range)\\
+  【批量校验 Hook】verify 包预留 batch 接口\\
+  【权限 Hook】API 入口包装层\\
+  【审计 Hook】写入成功后追加日志队列
+\end{frame}
+
+\section{演示规划}
+\begin{frame}{Demo 剧本}
+  % 步骤占位：1 health -> 2 mint -> 3 latest -> 4 verify match -> 5 verify mismatch
+  % 图片：终端+API对比示意
+\end{frame}
+\begin{frame}{角色分工}
+  % 左：周子为（事件 & 哈希） 右：张家畅（API & 数据）
+  % 图片：责任矩阵占位
+\end{frame}
+
+\section{总结}
+\begin{frame}{价值 \& 下一步}
+  % 三收益占位：【Gas 降】【查询快】【可验证】
+  % 两下一步占位：【缓存层引入】【批量校验】
+\end{frame}
+
+\end{document}

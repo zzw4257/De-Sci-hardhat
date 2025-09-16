@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"log"
 
-	"your-project/internal/model"
-	"your-project/internal/repository"
-	"your-project/internal/verify"
+	"desci-backend/internal/model"
+	"desci-backend/internal/repository"
+	"desci-backend/internal/verify"
 )
 
 type Service struct {
@@ -78,7 +78,7 @@ func (s *Service) processDatasetCreated(eventLog *model.EventLog) error {
 		Title:       eventData.Title,
 		Description: eventData.Description,
 		Owner:       eventData.Owner,
-		IPFSHash:    eventData.IPFSHash,
+		DataHash:    eventData.IPFSHash,
 	}
 
 	return s.repo.InsertDatasetRecord(datasetRecord)
