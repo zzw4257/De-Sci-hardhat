@@ -4,16 +4,16 @@ import (
 	"encoding/json"
 	"log"
 
-	"your-project/internal/model"
-	"your-project/internal/repository"
-	"your-project/internal/verify"
+	"desci-backend/internal/model"
+	"desci-backend/internal/repository"
+	"desci-backend/internal/verify"
 )
 
 type Service struct {
-	repo *repository.Repository
+	repo repository.IRepository
 }
 
-func NewService(repo *repository.Repository) *Service {
+func NewService(repo repository.IRepository) *Service {
 	return &Service{repo: repo}
 }
 

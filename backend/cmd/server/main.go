@@ -69,6 +69,9 @@ func main() {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-
+	
+	// 这里可以添加优雅关闭逻辑，例如关闭数据库连接等
+	_ = ctx // 临时使用变量避免编译错误
+	
 	log.Println("Server shutdown complete")
 }
