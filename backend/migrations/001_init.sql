@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS research_data (
     authors TEXT[] DEFAULT '{}',
     content_hash VARCHAR(255) NOT NULL,
     metadata_hash VARCHAR(255),
+    block_number BIGINT DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -19,7 +20,7 @@ CREATE TABLE IF NOT EXISTS dataset_records (
     title TEXT NOT NULL,
     description TEXT,
     owner VARCHAR(255) NOT NULL,
-    ipfs_hash VARCHAR(255) NOT NULL,
+    data_hash VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

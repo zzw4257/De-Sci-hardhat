@@ -2,51 +2,39 @@
 
 基于Go的区块链事件监听和API服务，负责处理去中心化科研平台的后端逻辑。
 
-## 🏗️ 项目架构
+## 🚀 快速启动
 
-按照任务分工文档，项目采用清晰的模块化架构：
-
-### 📁 目录结构
-```
-backend/
-├── cmd/server/           # 主程序入口
-├── internal/
-│   ├── api/             # HTTP API处理器
-│   ├── config/          # 配置管理
-│   ├── contracts/       # 智能合约ABI
-│   ├── listener/        # 区块链事件监听
-│   ├── model/           # 数据模型定义
-│   ├── repository/      # 数据访问层
-│   ├── service/         # 业务逻辑层
-│   └── verify/          # 哈希验证模块
-├── migrations/          # 数据库迁移脚本
-└── test_coverage.sh     # 测试覆盖率脚本
-```
-
-## 🚀 快速开始
-
-### 环境要求
-- Go 1.22+
-- PostgreSQL 13+
-- 区块链节点 (本地或远程)
-
-### 安装依赖
+### 方法一：一键启动
 ```bash
+./start.sh
+```
+
+### 方法二：手动启动
+```bash
+# 1. 安装依赖
 go mod tidy
+
+# 2. 编译项目
+go build -o main_simple cmd/server/main_simple.go
+
+# 3. 启动服务
+PORT=8088 ./main_simple
 ```
 
-### 配置环境
+### 方法三：直接运行
 ```bash
-cp .env.example .env
-# 编辑 .env 文件，配置数据库和区块链连接
+go run cmd/server/main_simple.go
 ```
 
-### 运行服务
+## 📊 API测试
+
+服务启动后，运行演示脚本测试所有API：
+
 ```bash
-go run cmd/server/main.go
+./demo.sh
 ```
 
-## 🧪 测试
+### 可用接口
 
 ### 运行所有测试
 ```bash
@@ -54,19 +42,89 @@ go run cmd/server/main.go
 chmod +x test_coverage.sh
 ./test_coverage.sh
 
-# 或手动运行
-go test -v ./internal/...
-```
+### 示例请求
 
-### 测试覆盖率
 ```bash
-# 生成覆盖率报告
-go test -coverprofile=coverage.out ./internal/...
-go tool cover -html=coverage.out -o coverage.html
+# 健康检查
+curl http://localhost:8088/health
 
-# 查看覆盖率统计
-go tool cover -func=coverage.out
+# 查看研究数据
+curl http://localhost:8088/api/v1/research/123
+
+# 查看数据集
+curl http://localhost:8088/api/v1/dataset/456
+
+# 验证研究内容
+curl -X POST http://localhost:8088/api/v1/verify/research/789 \
+     -H "Content-Type: application/json" \
+     -d '{"raw":"test data"}'
 ```
+
+## 📁 目录结构
+
+```
+backend/
+├── cmd/server/              # 启动入口
+│   ├── main.go             # 完整版本（待完善）
+│   └── main_simple.go      # 简化版本（当前可用）
+├── internal/               # 内部模块
+│   ├── config/config.go    # 配置管理
+│   ├── listener/           # 区块链事件监听
+│   ├── model/models.go     # 数据模型
+│   ├── repository/         # 数据访问层
+│   ├── service/            # 业务逻辑层
+│   ├── verify/hash.go      # 哈希验证
+│   ├── api/router.go       # HTTP路由
+│   └── contracts/          # 合约ABI文件
+├── migrations/             # 数据库迁移
+├── .env                    # 环境变量
+├── start.sh               # 启动脚本
+├── demo.sh                # 演示脚本
+└── README.md              # 说明文档
+```
+
+## 🔧 配置说明
+
+环境变量配置文件 `.env`：
+
+```bash
+# 服务器配置
+PORT=8088
+
+# 区块链配置
+ETHEREUM_RPC=http://localhost:8545
+START_BLOCK=0
+PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+
+# 数据库配置
+DATABASE_URL=postgres://zzw4257@localhost:5432/desci?sslmode=disable
+
+# 合约地址
+DESCI_REGISTRY_ADDRESS=0x5FbDB2315678afecb367f032d93F642f64180aa3
+RESEARCH_NFT_ADDRESS=0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9
+DATASET_MANAGER_ADDRESS=0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0
+INFLUENCE_RANKING_ADDRESS=0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9
+DESCI_PLATFORM_ADDRESS=0x5FC8d32690cc91D4c39d9d3abcBD16989F875707
+```
+
+## 📝 当前状态
+
+✅ **已完成**：
+- 基本项目结构
+- 简化版API服务器
+- 模拟数据响应
+- 健康检查接口
+- 基础CRUD接口
+- 启动和演示脚本
+
+🚧 **待完善**：
+- 数据库连接和迁移
+- 区块链事件监听
+- 真实数据处理
+- 哈希验证逻辑
+- 错误处理和日志
+
+## 🎯 下一步开发
 
 ## 📊 张家畅模块完成情况
 

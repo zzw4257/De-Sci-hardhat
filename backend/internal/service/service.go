@@ -78,7 +78,7 @@ func (s *Service) processDatasetCreated(eventLog *model.EventLog) error {
 		Title:       eventData.Title,
 		Description: eventData.Description,
 		Owner:       eventData.Owner,
-		IPFSHash:    eventData.IPFSHash,
+		DataHash:    eventData.IPFSHash,
 	}
 
 	return s.repo.InsertDatasetRecord(datasetRecord)
