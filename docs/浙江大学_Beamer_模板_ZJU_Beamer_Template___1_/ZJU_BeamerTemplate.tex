@@ -106,6 +106,304 @@
 	\end{enumerate}
 \end{frame}
 
+\section{DeSci平台端到端演示}
+\begin{frame}
+	\frametitle{完整演示流程 - 链上写链下读+数据库集成}
+	
+	\begin{columns}[c]
+		\column{0.5\textwidth}
+		\begin{block}{演示步骤}
+			\begin{enumerate}
+				\item \small \textbf{启动环境} - 部署10个合约到Hardhat
+				\item \small \textbf{后端服务} - Go服务连接SQLite+事件监听
+				\item \small \textbf{链上交互} - 用户注册、发表研究成果NFT
+				\item \small \textbf{链下同步} - 捕获事件并入库SQLite
+				\item \small \textbf{数据库验证} - 查询验证数据完整性
+				\item \small \textbf{API验证} - RESTful接口获取数据
+			\end{enumerate}
+		\end{block}
+		
+		\column{0.5\textwidth}
+		\begin{center}
+			% 端到端架构图留白
+			\fbox{\parbox{0.9\textwidth}{\centering
+				\vspace{3cm}
+				{\Large \textcolor{blue}{[端到端架构图]}}
+				\vspace{0.5cm}
+				
+				\small 智能合约 → 事件监听 → SQLite → API
+				\vspace{0.5cm}
+			}}
+		\end{center}
+	\end{columns}
+	
+	\vspace{0.3cm}
+	\begin{alertblock}{演示重点}
+		完整展示链上写、链下读与数据库真实集成的DeSci平台
+	\end{alertblock}
+\end{frame}
+
+\begin{frame}
+	\frametitle{步骤1: 环境启动与合约部署 🚀}
+	
+	\begin{columns}[c]
+		\column{0.5\textwidth}
+		\begin{block}{启动命令}
+			\texttt{\$ npm run start-hardhat}\\
+			\texttt{\$ npm run deploy-contracts}
+		\end{block}
+		
+		\begin{block}{验证要点}
+			\begin{itemize}
+				\item Hardhat网络 (Chain ID: 31337) 启动成功
+				\item 10个智能合约全部部署完成
+				\item 合约地址输出并记录到配置文件
+			\end{itemize}
+		\end{block}
+		
+		\column{0.5\textwidth}
+		% 环境启动截图留白
+		\begin{center}
+			\fbox{\parbox{0.9\textwidth}{\centering
+				\vspace{2.5cm}
+				{\Large \textcolor{green}{[Hardhat部署日志]}}
+				\vspace{0.5cm}
+				
+				\small
+				\texttt{✅ DeSciRegistry: 0x5FbDB...\\
+				✅ DatasetManager: 0xe7f17...\\
+				✅ ResearchNFT: 0x9fE46...\\
+				...10个合约部署完成}
+				\vspace{0.5cm}
+			}}
+		\end{center}
+	\end{columns}
+\end{frame}
+
+\begin{frame}
+	\frametitle{步骤2: 后端服务启动与数据库连接 💾}
+	
+	\begin{block}{启动命令}
+		\texttt{\$ cd backend \&\& go run cmd/server/main.go}
+	\end{block}
+	
+	\begin{columns}[c]
+		\column{0.5\textwidth}
+		\begin{block}{验证要点}
+			\begin{itemize}
+				\item SQLite数据库连接成功
+				\item 区块链事件监听器启动
+				\item HTTP API服务器运行 (端口8080)
+				\item 合约地址配置加载完成
+			\end{itemize}
+		\end{block}
+		
+		\column{0.5\textwidth}
+		% 后端启动日志截图留白
+		\begin{center}
+			\fbox{\parbox{0.9\textwidth}{\centering
+				\vspace{2.5cm}
+				{\Large \textcolor{blue}{[Go后端启动日志]}}
+				\vspace{0.5cm}
+				
+				\small 
+				\texttt{✅ SQLite connected\\
+				🔗 Event listeners started\\
+				🚀 Server running on :8080}
+				\vspace{1cm}
+			}}
+		\end{center}
+	\end{columns}
+\end{frame}
+
+\begin{frame}
+	\frametitle{步骤3: 链上交互与事件触发 ⛓️}
+	
+	\begin{columns}[c]
+		\column{0.5\textwidth}
+		\begin{block}{演示脚本}
+			\texttt{\$ npx hardhat run scripts/\\
+			fullTestScenario.js --network localhost}
+		\end{block}
+		
+		\begin{block}{模拟操作}
+			\begin{itemize}
+				\item 用户注册 → UserRegistered事件
+				\item 上传数据集 → DatasetUploaded事件
+				\item 发表研究成果 → ResearchMinted事件
+			\end{itemize}
+		\end{block}
+		
+		\column{0.5\textwidth}
+		% 链上交互截图留白
+		\begin{center}
+			\fbox{\parbox{0.9\textwidth}{\centering
+				\vspace{2.5cm}
+				{\Large \textcolor{orange}{[Hardhat交易日志]}}
+				\vspace{0.5cm}
+				
+				\small 
+				\texttt{Transaction: 0xabc123...\\
+				ResearchMinted(tokenId: 1)\\
+				Gas Used: 234,567}
+				\vspace{1cm}
+			}}
+		\end{center}
+	\end{columns}
+\end{frame}
+
+\begin{frame}
+	\frametitle{步骤4: 链下事件同步与数据库写入 🔄}
+	
+	\begin{block}{事件监听验证}
+		Go后端实时捕获链上事件并入库SQLite数据库
+	\end{block}
+	
+	\begin{columns}[c]
+		\column{0.5\textwidth}
+		\begin{block}{同步过程}
+			\begin{itemize}
+				\item 监听到ResearchMinted事件
+				\item 提取事件参数：tokenId, author, contentHash
+				\item 插入到research\_data表
+				\item 记录区块号和交易哈希
+			\end{itemize}
+		\end{block}
+		
+		\column{0.5\textwidth}
+		% 事件同步日志截图留白
+		\begin{center}
+			\fbox{\parbox{0.9\textwidth}{\centering
+				\vspace{2.5cm}
+				{\Large \textcolor{purple}{[事件同步日志]}}
+				\vspace{0.5cm}
+				
+				\small 
+				\texttt{📡 Event Captured: ResearchMinted\\
+				💾 Inserting to SQLite...\\
+				✅ Database sync completed}
+				\vspace{1cm}
+			}}
+		\end{center}
+	\end{columns}
+\end{frame}
+
+\begin{frame}
+	\frametitle{步骤5: SQLite数据库验证 🗃️}
+	
+	\begin{columns}[c]
+		\column{0.5\textwidth}
+		\begin{block}{数据库查询}
+			直接查询SQLite验证数据完整性
+		\end{block}
+		
+		\begin{alertblock}{SQL查询命令}
+			\texttt{SELECT * FROM research\_data\\
+			WHERE token\_id = '1';}
+		\end{alertblock}
+		
+		\column{0.5\textwidth}
+		% 数据库查询截图留白
+		\begin{center}
+			\fbox{\parbox{0.9\textwidth}{\centering
+				\vspace{2.5cm}
+				{\Large \textcolor{green}{[SQLite查询结果]}}
+				\vspace{0.5cm}
+				
+				\small
+				\texttt{token\_id: 1\\
+				title: 区块链科研应用\\
+				authors: ["0x123..."]\\
+				block\_number: 12345\\
+				tx\_hash: 0xabc123...}
+				\vspace{0.5cm}
+			}}
+		\end{center}
+	\end{columns}
+	
+	\vspace{0.3cm}
+	\begin{block}{验证要点}
+		✅ 链上数据与数据库数据完全一致 \quad ✅ 可追溯性：包含区块号和交易哈希
+	\end{block}
+\end{frame}
+
+\begin{frame}
+	\frametitle{步骤6: RESTful API验证与数据一致性 📡}
+	
+	\begin{columns}[c]
+		\column{0.5\textwidth}
+		\begin{block}{API测试}
+			通过REST API获取刚才上链的数据
+		\end{block}
+		
+		\begin{alertblock}{测试命令}
+			\texttt{curl -X GET \\
+			"http://localhost:8080/api/v1/\\
+			research/1"}
+		\end{alertblock}
+		
+		\column{0.5\textwidth}
+		% API验证截图留白
+		\begin{center}
+			\fbox{\parbox{0.9\textwidth}{\centering
+				\vspace{2.5cm}
+				{\Large \textcolor{cyan}{[API响应结果]}}
+				\vspace{0.5cm}
+				
+				\small
+				\texttt{\{\\
+				"tokenId": "1",\\
+				"title": "区块链科研应用",\\
+				"authors": ["0x123..."],\\
+				"contentHash": "0xabc...",\\
+				"blockNumber": 12345\\
+				\}}
+				\vspace{0.5cm}
+			}}
+		\end{center}
+	\end{columns}
+	
+	\vspace{0.3cm}
+	\begin{block}{一致性验证}
+		✅ API数据 = SQLite数据 = 链上数据 \quad ✅ 端到端数据完整性验证成功
+	\end{block}
+\end{frame}
+
+\begin{frame}
+	\frametitle{演示总结 - 数据库真实集成验证 🎯}
+	
+	\begin{columns}[c]
+		\column{0.6\textwidth}
+		\begin{block}{演示完成验证清单}
+			\begin{itemize}
+				\item ✅ \textbf{环境部署} - 10个智能合约成功部署
+				\item ✅ \textbf{数据库连接} - SQLite真实连接并建表
+				\item ✅ \textbf{链上交互} - 用户注册、研究成果发表
+				\item ✅ \textbf{事件同步} - 实时捕获并入库SQLite
+				\item ✅ \textbf{数据一致性} - 链上链下数据完全一致
+				\item ✅ \textbf{API验证} - RESTful接口获取数据库数据
+			\end{itemize}
+		\end{block}
+		
+		\begin{alertblock}{核心价值体现}
+			完整展示了\textbf{链上写、链下读与数据库真实集成}的DeSci平台架构！
+		\end{alertblock}
+		
+		\column{0.4\textwidth}
+		% 数据库集成架构图留白
+		\begin{center}
+			\fbox{\parbox{0.9\textwidth}{\centering
+				\vspace{3cm}
+				{\Large \textcolor{red}{[数据库集成架构]}}
+				\vspace{0.5cm}
+				
+				\small 智能合约 → 事件监听 → SQLite → API
+				\vspace{1cm}
+			}}
+		\end{center}
+	\end{columns}
+\end{frame}
+
 \section{结论}
 \begin{frame}
 	\frametitle{结论}

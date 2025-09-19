@@ -103,3 +103,25 @@ func (s *Service) GetResearchByTokenID(tokenID string) (*model.ResearchData, err
 func (s *Service) GetDatasetByID(datasetID string) (*model.DatasetRecord, error) {
 	return s.repo.GetDatasetRecord(datasetID)
 }
+
+// GetLatestResearch 获取最新研究列表
+func (s *Service) GetLatestResearch(limit, offset int) ([]*model.ResearchData, error) {
+	if limit <= 0 {
+		limit = 20 // 默认限制
+	}
+	// 使用repository的方法，按创建时间倒序
+	return s.repo.GetLatestResearchData(limit, offset)
+}
+
+// GetResearchByAuthor 按作者获取研究列表
+func (s *Service) GetResearchByAuthor(author string, limit int) ([]*model.ResearchData, error) {
+	if limit <= 0 {
+		limit = 20 // 默认限制
+	}
+	return s.repo.ListResearchDataByAuthor(author, limit)
+}
+
+// GetLastEventBlock 获取最后的事件区块号
+func (s *Service) GetLastEventBlock() (uint64, error) {
+	return s.repo.GetLastEventBlock()
+}

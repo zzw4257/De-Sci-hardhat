@@ -123,7 +123,7 @@ func TestRepository_InsertDatasetRecord(t *testing.T) {
 		Title:       "Test Dataset",
 		Description: "A test dataset",
 		Owner:       "0x1234567890abcdef",
-		IPFSHash:    "QmTest123",
+		DataHash:    "QmTest123",
 	}
 
 	// 测试插入
@@ -160,13 +160,13 @@ func TestRepository_ListDatasetsByOwner(t *testing.T) {
 		DatasetID: "dataset1",
 		Title:     "Dataset 1",
 		Owner:     owner,
-		IPFSHash:  "QmHash1",
+		DataHash:  "QmHash1",
 	}
 	dataset2 := &model.DatasetRecord{
 		DatasetID: "dataset2",
 		Title:     "Dataset 2", 
 		Owner:     owner,
-		IPFSHash:  "QmHash2",
+		DataHash:  "QmHash2",
 	}
 
 	err := repo.InsertDatasetRecord(dataset1)

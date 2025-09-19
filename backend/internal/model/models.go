@@ -12,7 +12,7 @@ type ResearchData struct {
 	ID           uint      `json:"id" gorm:"primaryKey"`
 	TokenID      string    `json:"token_id" gorm:"uniqueIndex;size:255"`
 	Title        string    `json:"title"`
-	Authors      []string  `json:"authors" gorm:"type:text[]"`
+	Authors      StringArray  `json:"authors" gorm:"type:text[]"`
 	ContentHash  string    `json:"content_hash"`
 	MetadataHash string    `json:"metadata_hash"`
 	BlockNumber  uint64    `json:"block_number" gorm:"default:0"`

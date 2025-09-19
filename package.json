@@ -9,6 +9,13 @@
     "deploy": "hardhat run scripts/deploy.js",
     "deploy:local": "hardhat run scripts/deploy.js --network localhost",
     "node": "hardhat node",
+    "start-hardhat": "hardhat node",
+    "deploy-contracts": "hardhat run scripts/deployEnhancedDeSci.js --network localhost",
+    "demo-scenario": "hardhat run scripts/fullTestScenario.js --network localhost",
+    "demo-core": "hardhat run scripts/coreOperationsDemo.js --network localhost",
+    "demo-backend": "cd backend && npm run start-backend",
+    "start-backend-with-contracts": "./start-backend-with-contracts.sh",
+    "demo-full": "npm run demo-scenario",
     "dev": "npm run frontend:dev",
     "frontend:dev": "cd frontend && npm start",
     "frontend:build": "cd frontend && npm run build"

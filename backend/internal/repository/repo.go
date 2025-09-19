@@ -2,9 +2,11 @@ package repository
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	"gorm.io/driver/postgres"
+	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"desci-backend/internal/model"
 )
@@ -25,6 +27,10 @@ type IRepository interface {
 	GetDatasetRecord(datasetID string) (*model.DatasetRecord, error)
 	ListDatasetsByOwner(owner string, limit int) ([]*model.DatasetRecord, error)
 	UpdateDatasetRecord(datasetID string, updates map[string]interface{}) error
+	
+	// Extended query operations
+	GetLatestResearchData(limit, offset int) ([]*model.ResearchData, error)
+	GetLastEventBlock() (uint64, error)
 	
 	// Event log operations
 	InsertEventLog(log *model.EventLog) error
@@ -49,7 +55,20 @@ func NewTestRepository(db *gorm.DB) *Repository {
 }
 
 func NewRepository(databaseURL string) (*Repository, error) {
-	db, err := gorm.Open(postgres.Open(databaseURL), &gorm.Config{})
+	var dialector gorm.Dialector
+	
+	// 根据URL选择合适的数据库驱动
+	if strings.HasPrefix(databaseURL, "sqlite://") || strings.HasPrefix(databaseURL, "sqlite:") {
+		// SQLite
+		dbPath := strings.TrimPrefix(databaseURL, "sqlite://")
+		dbPath = strings.TrimPrefix(dbPath, "sqlite:")
+		dialector = sqlite.Open(dbPath)
+	} else {
+		// PostgreSQL (默认)
+		dialector = postgres.Open(databaseURL)
+	}
+	
+	db, err := gorm.Open(dialector, &gorm.Config{})
 	if err != nil {
 		return nil, err
 	}
@@ -162,6 +181,34 @@ func (r *Repository) Ping(ctx context.Context) error {
 		return err
 	}
 	return db.PingContext(ctx)
+}
+
+// 获取最新研究数据（按创建时间倒序）
+func (r *Repository) GetLatestResearchData(limit, offset int) ([]*model.ResearchData, error) {
+	var data []*model.ResearchData
+	query := r.db.Order("created_at DESC")
+	if limit > 0 {
+		query = query.Limit(limit)
+	}
+	if offset > 0 {
+		query = query.Offset(offset)
+	}
+	err := query.Find(&data).Error
+	return data, err
+}
+
+// 获取最后的事件区块号
+func (r *Repository) GetLastEventBlock() (uint64, error) {
+	var result struct {
+		BlockNumber uint64
+	}
+	err := r.db.Model(&model.EventLog{}).
+		Select("MAX(block_number) as block_number").
+		Scan(&result).Error
+	if err != nil {
+		return 0, err
+	}
+	return result.BlockNumber, nil
 }
 
 

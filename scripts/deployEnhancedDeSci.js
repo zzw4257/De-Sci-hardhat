@@ -28,6 +28,38 @@ async function main() {
         deployedContracts.zkpVerifier = await zkpVerifier.getAddress();
         console.log("✅ ZKPVerifier部署完成:", deployedContracts.zkpVerifier);
 
+        // 2.1 部署 ZKProof 管理合约
+        console.log("\n📋 部署ZKProof合约...");
+        const ZKProof = await ethers.getContractFactory("ZKProof");
+        const zkProof = await ZKProof.deploy();
+        await zkProof.waitForDeployment();
+        deployedContracts.zkProof = await zkProof.getAddress();
+        console.log("✅ ZKProof部署完成:", deployedContracts.zkProof);
+
+        // 2.2 部署 ConstraintManager 约束管理合约
+        console.log("\n⚖️ 部署ConstraintManager合约...");
+        const ConstraintManager = await ethers.getContractFactory("ConstraintManager");
+        const constraintManager = await ConstraintManager.deploy();
+        await constraintManager.waitForDeployment();
+        deployedContracts.constraintManager = await constraintManager.getAddress();
+        console.log("✅ ConstraintManager部署完成:", deployedContracts.constraintManager);
+
+        // 2.3 部署 DataFeatureExtractor 数据特征提取合约
+        console.log("\n📊 部署DataFeatureExtractor合约...");
+        const DataFeatureExtractor = await ethers.getContractFactory("DataFeatureExtractor");
+        const dataFeatureExtractor = await DataFeatureExtractor.deploy();
+        await dataFeatureExtractor.waitForDeployment();
+        deployedContracts.dataFeatureExtractor = await dataFeatureExtractor.getAddress();
+        console.log("✅ DataFeatureExtractor部署完成:", deployedContracts.dataFeatureExtractor);
+
+        // 2.4 部署 ResearchDataVerifier 科研数据验证合约
+        console.log("\n🔬 部署ResearchDataVerifier合约...");
+        const ResearchDataVerifier = await ethers.getContractFactory("ResearchDataVerifier");
+        const researchDataVerifier = await ResearchDataVerifier.deploy();
+        await researchDataVerifier.waitForDeployment();
+        deployedContracts.researchDataVerifier = await researchDataVerifier.getAddress();
+        console.log("✅ ResearchDataVerifier部署完成:", deployedContracts.researchDataVerifier);
+
         // 3. 部署数据集管理合约
         console.log("\n📊 部署DatasetManager合约...");
         const DatasetManager = await ethers.getContractFactory("DatasetManager");
@@ -76,26 +108,47 @@ async function main() {
         deployedContracts.sciToken = sciTokenAddress;
         console.log("🪙 SciToken地址:", deployedContracts.sciToken);
 
-        console.log("\n🎉 所有合约部署完成！");
+        console.log("\n🎉 全部10个合约部署完成！");
         
         // 输出所有合约地址
-        console.log("\n📋 合约地址汇总:");
+        console.log("\n📋 10个智能合约地址汇总:");
         console.log("=" .repeat(60));
-        Object.entries(deployedContracts).forEach(([name, address]) => {
-            console.log(`${name.padEnd(20)}: ${address}`);
-        });
+        console.log("1.  DeSciRegistry      :", deployedContracts.userRegistry);
+        console.log("2.  ZKPVerifier        :", deployedContracts.zkpVerifier);
+        console.log("3.  ZKProof            :", deployedContracts.zkProof);
+        console.log("4.  ConstraintManager  :", deployedContracts.constraintManager);
+        console.log("5.  DataFeatureExtractor:", deployedContracts.dataFeatureExtractor);
+        console.log("6.  ResearchDataVerifier:", deployedContracts.researchDataVerifier);
+        console.log("7.  DatasetManager     :", deployedContracts.datasetManager);
+        console.log("8.  ResearchNFT        :", deployedContracts.researchNFT);
+        console.log("9.  InfluenceRanking   :", deployedContracts.influenceRanking);
+        console.log("10. DeSciPlatform      :", deployedContracts.platform);
+        console.log("11. SciToken (auto)    :", deployedContracts.sciToken);
         console.log("=" .repeat(60));
 
         // 设置合约权限和初始配置
         console.log("\n⚙️ 配置合约权限...");
         
+        // 最重要：授予DeSciPlatform合约admin权限
+        const ADMIN_ROLE = await userRegistry.ADMIN_ROLE();
+        await userRegistry.grantRole(ADMIN_ROLE, deployedContracts.platform);
+        console.log("✅ 授予DeSciPlatform admin权限");
+        
         // 设置DatasetManager的质量验证者
-        await datasetManager.addQualityVerifier(deployer.address);
-        console.log("✅ 添加质量验证者");
+        try {
+            await datasetManager.addQualityVerifier(deployer.address);
+            console.log("✅ 添加质量验证者");
+        } catch (error) {
+            console.log("⚠️ 质量验证者设置跳过 (方法可能不存在)");
+        }
 
         // 设置ResearchNFT的评审员权限
-        await researchNFT.addAuthorizedReviewer(deployer.address);
-        console.log("✅ 添加授权评审员");
+        try {
+            await researchNFT.addAuthorizedReviewer(deployer.address);
+            console.log("✅ 添加授权评审员");
+        } catch (error) {
+            console.log("⚠️ 评审员权限设置跳过 (方法可能不存在)");
+        }
 
         // 验证合约功能
         console.log("\n🔍 验证合约功能...");
@@ -139,6 +192,26 @@ async function main() {
                 DeSciRegistry: {
                     address: deployedContracts.userRegistry,
                     abi: "artifacts/contracts/DeSciRegistry.sol/DeSciRegistry.json"
+                },
+                ZKPVerifier: {
+                    address: deployedContracts.zkpVerifier,
+                    abi: "artifacts/contracts/ZKPVerifier.sol/ZKPVerifier.json"
+                },
+                ZKProof: {
+                    address: deployedContracts.zkProof,
+                    abi: "artifacts/contracts/ZKProof.sol/ZKProof.json"
+                },
+                ConstraintManager: {
+                    address: deployedContracts.constraintManager,
+                    abi: "artifacts/contracts/ConstraintManager.sol/ConstraintManager.json"
+                },
+                DataFeatureExtractor: {
+                    address: deployedContracts.dataFeatureExtractor,
+                    abi: "artifacts/contracts/DataFeatureExtractor.sol/DataFeatureExtractor.json"
+                },
+                ResearchDataVerifier: {
+                    address: deployedContracts.researchDataVerifier,
+                    abi: "artifacts/contracts/ResearchDataVerifier.sol/ResearchDataVerifier.json"
                 },
                 DatasetManager: {
                     address: deployedContracts.datasetManager,

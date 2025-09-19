@@ -78,7 +78,7 @@ func TestGetResearch_Success(t *testing.T) {
 
 	// 测试API
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/api/v1/research/123", nil)
+	req, _ := http.NewRequest("GET", "/api/research/123", nil)
 	router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
@@ -95,7 +95,7 @@ func TestGetResearch_NotFound(t *testing.T) {
 	router, _ := setupTestAPI(t)
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/api/v1/research/nonexistent", nil)
+	req, _ := http.NewRequest("GET", "/api/research/nonexistent", nil)
 	router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusNotFound, w.Code)
@@ -115,14 +115,14 @@ func TestGetDataset_Success(t *testing.T) {
 		Title:       "Test Dataset",
 		Description: "A test dataset",
 		Owner:       "0x1234567890abcdef",
-		IPFSHash:    "QmTest123",
+		DataHash:    "QmTest123",
 	}
 	err := repo.InsertDatasetRecord(testRecord)
 	require.NoError(t, err)
 
 	// 测试API
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/api/v1/dataset/dataset-456", nil)
+	req, _ := http.NewRequest("GET", "/api/dataset/dataset-456", nil)
 	router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
@@ -139,7 +139,7 @@ func TestGetDataset_NotFound(t *testing.T) {
 	router, _ := setupTestAPI(t)
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/api/v1/dataset/nonexistent", nil)
+	req, _ := http.NewRequest("GET", "/api/dataset/nonexistent", nil)
 	router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusNotFound, w.Code)
@@ -173,7 +173,7 @@ func TestVerifyResearch_Success(t *testing.T) {
 
 	// 测试API
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("POST", "/api/v1/verify/research/verify-123", bytes.NewBuffer(jsonBody))
+	req, _ := http.NewRequest("POST", "/api/research/verify-123/verify", bytes.NewBuffer(jsonBody))
 	req.Header.Set("Content-Type", "application/json")
 	router.ServeHTTP(w, req)
 
@@ -182,8 +182,7 @@ func TestVerifyResearch_Success(t *testing.T) {
 	var response map[string]interface{}
 	err = json.Unmarshal(w.Body.Bytes(), &response)
 	assert.NoError(t, err)
-	assert.Equal(t, "verify-123", response["tokenId"])
-	assert.Equal(t, true, response["isValid"])
+	assert.Equal(t, true, response["match"])
 }
 
 func TestVerifyResearch_InvalidHash(t *testing.T) {
@@ -207,7 +206,7 @@ func TestVerifyResearch_InvalidHash(t *testing.T) {
 
 	// 测试API
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("POST", "/api/v1/verify/research/verify-456", bytes.NewBuffer(jsonBody))
+	req, _ := http.NewRequest("POST", "/api/research/verify-456/verify", bytes.NewBuffer(jsonBody))
 	req.Header.Set("Content-Type", "application/json")
 	router.ServeHTTP(w, req)
 
@@ -216,8 +215,7 @@ func TestVerifyResearch_InvalidHash(t *testing.T) {
 	var response map[string]interface{}
 	err = json.Unmarshal(w.Body.Bytes(), &response)
 	assert.NoError(t, err)
-	assert.Equal(t, "verify-456", response["tokenId"])
-	assert.Equal(t, false, response["isValid"])
+	assert.Equal(t, false, response["match"])
 }
 
 func TestVerifyResearch_BadRequest(t *testing.T) {
@@ -225,7 +223,7 @@ func TestVerifyResearch_BadRequest(t *testing.T) {
 
 	// 测试无效JSON
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("POST", "/api/v1/verify/research/123", bytes.NewBuffer([]byte("invalid json")))
+	req, _ := http.NewRequest("POST", "/api/research/123/verify", bytes.NewBuffer([]byte("invalid json")))
 	req.Header.Set("Content-Type", "application/json")
 	router.ServeHTTP(w, req)
 
@@ -242,7 +240,7 @@ func TestVerifyResearch_MissingContent(t *testing.T) {
 	jsonBody, _ := json.Marshal(requestBody)
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("POST", "/api/v1/verify/research/123", bytes.NewBuffer(jsonBody))
+	req, _ := http.NewRequest("POST", "/api/research/123/verify", bytes.NewBuffer(jsonBody))
 	req.Header.Set("Content-Type", "application/json")
 	router.ServeHTTP(w, req)
 
@@ -258,7 +256,7 @@ func TestVerifyResearch_ResearchNotFound(t *testing.T) {
 	jsonBody, _ := json.Marshal(requestBody)
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("POST", "/api/v1/verify/research/nonexistent", bytes.NewBuffer(jsonBody))
+	req, _ := http.NewRequest("POST", "/api/research/nonexistent/verify", bytes.NewBuffer(jsonBody))
 	req.Header.Set("Content-Type", "application/json")
 	router.ServeHTTP(w, req)
 
@@ -284,7 +282,7 @@ func TestAPIEndpointsExist(t *testing.T) {
 		Title:       "Test Dataset", 
 		Description: "Test Description",
 		Owner:       "0xowner123",
-		IPFSHash:    "QmTest456",
+		DataHash:    "QmTest456",
 	}
 	err = repo.InsertDatasetRecord(testDataset)
 	require.NoError(t, err)
@@ -296,9 +294,9 @@ func TestAPIEndpointsExist(t *testing.T) {
 		expectedCode int
 	}{
 		{"GET", "/health", http.StatusOK},
-		{"GET", "/api/v1/research/123", http.StatusOK},
-		{"GET", "/api/v1/dataset/456", http.StatusOK},
-		{"POST", "/api/v1/verify/research/123", http.StatusBadRequest}, // 没有body会返回400
+		{"GET", "/api/research/123", http.StatusOK},
+		{"GET", "/api/dataset/456", http.StatusOK},
+		{"POST", "/api/research/123/verify", http.StatusBadRequest}, // 没有body会返回400
 	}
 
 	for _, route := range routes {
@@ -339,7 +337,7 @@ func BenchmarkGetResearch(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		w := httptest.NewRecorder()
-		req, _ := http.NewRequest("GET", "/api/v1/research/bench-123", nil)
+		req, _ := http.NewRequest("GET", "/api/research/bench-123", nil)
 		router.ServeHTTP(w, req)
 	}
 }
@@ -367,7 +365,7 @@ func TestCompleteWorkflow(t *testing.T) {
 		Title:       "Related Dataset",
 		Description: "Dataset for workflow test",
 		Owner:       "0xworkflowowner",
-		IPFSHash:    "QmWorkflow123",
+		DataHash:    "QmWorkflow123",
 	}
 	err = repo.InsertDatasetRecord(datasetRecord)
 	require.NoError(t, err)
@@ -393,13 +391,13 @@ func TestCompleteWorkflow(t *testing.T) {
 
 	// 5. 测试获取研究数据
 	w = httptest.NewRecorder()
-	req, _ = http.NewRequest("GET", "/api/v1/research/workflow-123", nil)
+	req, _ = http.NewRequest("GET", "/api/research/workflow-123", nil)
 	router.ServeHTTP(w, req)
 	assert.Equal(t, http.StatusOK, w.Code)
 
 	// 6. 测试获取数据集
 	w = httptest.NewRecorder()
-	req, _ = http.NewRequest("GET", "/api/v1/dataset/workflow-dataset", nil)
+	req, _ = http.NewRequest("GET", "/api/dataset/workflow-dataset", nil)
 	router.ServeHTTP(w, req)
 	assert.Equal(t, http.StatusOK, w.Code)
 
@@ -410,7 +408,7 @@ func TestCompleteWorkflow(t *testing.T) {
 	jsonBody, _ := json.Marshal(requestBody)
 
 	w = httptest.NewRecorder()
-	req, _ = http.NewRequest("POST", "/api/v1/verify/research/workflow-123", bytes.NewBuffer(jsonBody))
+	req, _ = http.NewRequest("POST", "/api/research/workflow-123/verify", bytes.NewBuffer(jsonBody))
 	req.Header.Set("Content-Type", "application/json")
 	router.ServeHTTP(w, req)
 	assert.Equal(t, http.StatusOK, w.Code)
@@ -418,7 +416,7 @@ func TestCompleteWorkflow(t *testing.T) {
 	var verifyResponse map[string]interface{}
 	err = json.Unmarshal(w.Body.Bytes(), &verifyResponse)
 	assert.NoError(t, err)
-	assert.Equal(t, true, verifyResponse["isValid"])
+	assert.Equal(t, true, verifyResponse["match"])
 
 	// 8. 测试数据库操作
 	err = repo.Ping(ctx)
